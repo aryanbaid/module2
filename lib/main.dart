@@ -101,10 +101,10 @@ class _DiceGameState extends State<DiceGame>
     int multiplier = 0;
 
     if (gameType == '2 Alike') {
-      isWin = frequency.values.any((count) => count >= 2);
+      isWin = frequency.values.any((count) => count == 2);
       multiplier = 2;
     } else if (gameType == '3 Alike') {
-      isWin = frequency.values.any((count) => count >= 3);
+      isWin = frequency.values.any((count) => count == 3);
       multiplier = 3;
     } else if (gameType == '4 Alike') {
       isWin = frequency.values.any((count) => count == 4);
