@@ -158,7 +158,7 @@ class _DiceGameState extends State<DiceGame>
                 'Wallet balance: $balance coins',
                 style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 25.0,
+                  fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -212,7 +212,7 @@ class _DiceGameState extends State<DiceGame>
               ),
               SizedBox(height: 50.0),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: dicenumber.map((diceNumber) {
                   return AnimatedBuilder(
                     animation: _animation,
