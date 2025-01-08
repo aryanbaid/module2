@@ -158,7 +158,7 @@ class _DiceGameState extends State<DiceGame>
                 'Wallet balance: $balance coins',
                 style: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 22.0,
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
