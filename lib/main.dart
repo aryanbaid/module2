@@ -1,9 +1,189 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
-void main() => runApp(MaterialApp(
-      home: DiceGame(),
-    ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully");
+  } catch (e) {
+    print("Error initializing Firebase: $e");
+  }
+  runApp(MaterialApp(
+    home: SignInScreen(), // Default screen is Sign In
+  ));
+}
+
+class SignInScreen extends StatefulWidget {
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Sign In",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montserrat',
+          ),
+        ),
+        backgroundColor: Colors.red[900],
+      ),
+      backgroundColor: Colors.grey[350],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: "Email"),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: "Password"),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _signIn,
+              child: Text("Sign In"),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignUpScreen()),
+                );
+              },
+              child: Text("Don't have an account? Sign Up"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _signIn() async {
+    print("Sign In button pressed");
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      print("Sign In successful");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DiceGame()),
+      );
+    } catch (e) {
+      print("Sign in error: $e");
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Sign In Failed: $e")),
+        );
+      });
+    }
+  }
+}
+
+class SignUpScreen extends StatefulWidget {
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false, // Removes back button
+        centerTitle: true,
+        title: Text(
+          "Sign Up",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montserrat',
+          ),
+        ),
+        backgroundColor: Colors.red[900],
+      ),
+      backgroundColor: Colors.grey[350],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: "Email"),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: "Password"),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _signUp,
+              child: Text("Sign Up"),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Goes back to Sign In
+              },
+              child: Text("Already have an account? Sign In"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _signUp() async {
+    print("Sign Up button pressed");
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      print("Sign Up successful");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DiceGame()),
+      );
+    } catch (e) {
+      print("Sign up error: $e");
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Sign Up Failed: $e")),
+        );
+      });
+    }
+  }
+}
 
 class DiceGame extends StatefulWidget {
   @override
@@ -131,6 +311,15 @@ class _DiceGameState extends State<DiceGame>
     });
   }
 
+  void _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SignInScreen()), // Replace with SignInScreen
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,6 +334,19 @@ class _DiceGameState extends State<DiceGame>
             )),
         centerTitle: true,
         backgroundColor: Colors.red[900],
+        actions: [
+          TextButton(
+              onPressed: () => _logout(context),
+              child: Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
+        ],
       ),
       backgroundColor: Colors.grey[350],
       body: Padding(
