@@ -496,6 +496,7 @@ class _DiceGameState extends State<DiceGame>
             )),
         centerTitle: true,
         backgroundColor: Colors.red[900],
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             onPressed: () => _logout(context),
